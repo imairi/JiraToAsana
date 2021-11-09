@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="images/logo.png" width="800">
+</div>
+
 # JiraToAsana
 
 Copy Jira ticket to Asana from Chrome Extension.
