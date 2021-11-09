@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="images/logo.png" width="800">
+  <img src="images/logo.png" width="600">
 </div>
 
 # JiraToAsana
