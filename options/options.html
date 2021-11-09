@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset = "UTF-8">
+    <link href="options.css" rel="stylesheet" type="text/css" media="all">
+  </head>
+  <body>
+      <div id="left">
+        <div class="section">
+          <div class="asana-title"> Asana Settings </div>
+          <div class="asana-box">
+            <div>
+              <label for="name" class="settingsLabel">Personal Access Token (*)</label><br>
+              <input type="text" id="access-token" name="access-token" size="40" class="settingsInput">
+            </div>
+            <div>
+              <label for="name" class="settingsLabel">Asana Workspace ID (*)</label><br>
+              <input type="text" id="workspace-id" name="workspace-id" size="40" class="settingsInput">
+            </div>
+            <div>
+              <label for="name" class="settingsLabel">Asana Team ID (*)</label><br>
+              <input type="text" id="team-id" name="team-id" size="40" class="settingsInput">
+            </div>
+          </div>
+          <div class="saveButtonArea">
+            <button type="button" id="saveAsanaSettingsButton" class="asana-save-button asana-button">Save</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="asana-title"> Projects </div>
+          <div class="scrollBox">
+            <form name="form1" id="asana-projects">
+            </form>
+          </div>
+          <div class="saveButtonArea">
+            <button type="button" id="saveProjectsButton" class="asana-save-button asana-button">Save</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="asana-title"> Custom Fields (Enum) </div>
+          <div class="scrollBox">
+            <div id="custom-fields-loading">
+            </div>
+            <div id="custom-fields">
+            </div>
+          </div>
+          <div class="saveButtonArea">
+            <button type="button" id="saveCustomFieldsButton" class="asana-save-button asana-button">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="right">
+        <div class="section">
+          <div class="jira-title"> Jira Settings </div>
+          <div class="jira-box">
+            <div>
+              <label for="name" class="settingsLabel">Jira Task Prefix (*)</label><br>
+              <input type="text" id="jira-prefix" name="jira-prefix" size="40" class="settingsInput">
+            </div>
+            <div>
+              <label for="name" class="settingsLabel">Regexp for cutting text from Jira title</label><br>
+              <input type="text" id="jira-regexp" name="jira-regexp" size="40" class="settingsInput">
+            </div>
+          </div>
+          <div class="saveButtonArea">
+            <button type="button" id="saveJiraSettingsButton" class="jira-save-button jira-button">Save</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="hint-title"> Hints </div>
+          <div class="hint-box">
+            <ol>
+              <li>Save higher settings, the following settings and its local stored data are reset, e.g. Save Asana Settings, current Projects and Custom Fields are reset. If wants to reset Custom Fields settings, save Projects again.</li>
+              <li>It is available to select only Enum type for Custom Fields.</li>
+              <li>It occurred some problems cannot be resolved by yourself, delete extension and install again.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <script src="options.js"></script>
+  </body>
+</html>

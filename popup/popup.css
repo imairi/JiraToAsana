@@ -1,0 +1,53 @@
+.loader {
+  width: 14px;
+}
+
+a:link {
+  color: #DF726E;
+}
+
+a:visited {
+  color: #DF726E;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+#title {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+#url{
+  font-size: 13px;
+}
+
+#create-task-box {
+ padding: 10px 0px 10px 0px; 
+}
+
+#create-task {
+  width: 100%;
+  padding: 10px;
+  margin: 0px 10px 0px 0px;
+  border: 1px solid #DF726E;
+  border-radius: 10px 10px 10px 10px;
+  font-weight: bold;
+  background: #DF726E;
+  color: #fff;
+}
+
+#create-task:hover {
+  background: #fff;
+  color: #DF726E;
+}
+
+#create-task:focus {
+  background: #eee;
+  color: #DF726E;
+}
+
+#loading-box {
+  text-align: center;
+}

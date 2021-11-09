@@ -1,0 +1,135 @@
+body {
+  width: 1050px;
+}
+
+#left {
+  float: left;
+  width: 500px;
+}
+
+#right {
+  float: right;
+  width: 500px;
+}
+
+.scrollBox {
+  height: 200px;               
+  border: 1px solid #333;      
+  overflow-y: scroll;          
+  padding: 10px;
+  margin: 10px;
+  border-color: #DF726E;
+}
+
+.asana-box {
+  height: 180px;               
+  border: 1px solid #333;      
+  padding: 10px;
+  margin: 10px;
+  border-color: #DF726E;
+}
+
+.jira-box {
+  height: 180px;               
+  border: 1px solid #333;      
+  padding: 10px;
+  margin: 10px;
+  border-color: #1C55C5;
+}
+
+.hint-box {
+  height: 200px;               
+  padding: 10px;
+  margin: 10px;
+  background-color: #EEE;
+  color: #666;
+  font-size: 17px;
+}
+
+.section {
+  margin: 10px 0px 20px 0px;
+}
+
+.asana-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #DF726E;
+}
+
+.jira-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #1C55C5;
+}
+
+.hint-title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #AAA;
+}
+
+.settingsLabel {
+  font-size: 15px;
+}
+
+.settingsInput {
+  padding: 5px;
+  margin: 5px 0px 5px 0px;
+}
+
+.asana-button {
+  padding: 10px;
+  margin: 0px 10px 0px 0px;
+  border: 1px solid #DF726E;      
+  border-radius: 10px 10px 10px 10px;
+  font-weight: bold;
+  background: #DF726E;
+  color: #fff;
+}
+
+.asana-save-button:hover {
+  color: #DF726E;
+  background: #fff;
+}
+
+.asana-save-button:focus {
+  color: #DF726E;
+  background: #eee;
+}
+
+.jira-button {
+  padding: 10px;
+  margin: 0px 10px 0px 0px;
+  border: 1px solid #1C55C5;      
+  border-radius: 10px 10px 10px 10px;
+  font-weight: bold;
+  background: #1C55C5;
+  color: #fff;
+}
+
+.jira-save-button:hover {
+  background: #fff;
+  color: #1C55C5;
+}
+
+.jira-save-button:focus {
+  background: #eee;
+  color: #1C55C5;
+}
+
+.saveButtonArea {
+  text-align: right;
+}
+
+.custom-field-project-name {
+  font-weight: bold;
+  margin: 0px 0px 0px 0px;
+}
+
+.custom-field-name {
+  margin: 0px 0px 0px 10px;
+}
+
+.custom-field-form {
+  margin: 0px 0px 0px 20px;
+}
