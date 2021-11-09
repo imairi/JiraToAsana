@@ -4,24 +4,24 @@
 
 # JiraToAsana
 
-Copy Jira ticket to Asana from Chrome Extension.
+Copy Jira issue to Asana from Chrome Extension.
 
 The below options are automatically set to Asana task.
 
 - multiple projects
 - custom field options(enum) for each project
 
-Let's save time to copy & paste Jira ticket to Asana as much as possible.
+Let's save time to copy & paste Jira issue to Asana as much as possible.
 
 # Features
 
 ## Create Asana task
 
-Open JiraToAsana, it loads Jira title and url. Click "Create Task" button, Asana task will be created following the Jira ticket with custom settings. Custom settings detail is reffered to the below.
+Open JiraToAsana, it loads Jira title and url. Click "Create Task" button, Asana task will be created following the Jira issue with custom settings. Custom settings detail is reffered to the below.
 
 ## Show Related tasks
 
-If related tasks for the Jira tickets in Asana, the tasks link will be displayed in the extension. It is the results for searching the Jira number in Asana.
+If related tasks for the Jira issue in Asana, the tasks link will be displayed in the extension. It is the results for searching the Jira number in Asana.
 
 
 # Settings
@@ -55,13 +55,13 @@ If reset the selected options, save Projects again.
 
 ## Jira Settings
 
-Jira prefix should be set for detecting Jira number. Jira prefix is like the below. It is all uppercase letter.
+Jira issue prefix should be set for detecting Jira issue number. Jira issue prefix is like the below. It is all uppercase letter.
 
 ```
-https://xxx.atlassian.net/browse/{Jira prefix}-12345
+https://xxx.atlassian.net/browse/{Jira issue prefix}-12345
 ```
 
-If cut off the phrase from Jira ticket title when copy to Asana, input Regexp field like this.
+If cut off the phrase from Jira issue title when copy to Asana, input Regexp field like this.
 
 ```
 【.*】| - Jira
