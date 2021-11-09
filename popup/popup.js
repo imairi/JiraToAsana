@@ -25,20 +25,23 @@ window.addEventListener('load',()=>{
         document.getElementById('create-task').remove();
         return
       }
-      chrome.tabs.getSelected(tab=>{ 
-          var regexp = new RegExp(defaultJiraSettings["jiraRegexp"], "g");
-          var trimmedPageTitle = tab.title.replace(regexp, '');
-          document.getElementById('title').innerHTML = trimmedPageTitle;
-          document.getElementById('url').innerHTML = tab.url;
-          pageTitle = trimmedPageTitle;
-          pageURL = tab.url;
 
-          var regexpJiraPrefix = new RegExp(defaultJiraSettings["jiraPrefix"] + "\\-\\d+");
-          jiraNumber = tab.url.match(regexpJiraPrefix);
-          workspaceID = defaultAsanaSettings["workspaceID"];
-          accessToken = defaultAsanaSettings["accessToken"];
-          getExistingTasks();
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        var tab = tabs[0];
+        var regexp = new RegExp(defaultJiraSettings["jiraRegexp"], "g");
+        var trimmedPageTitle = tab.title.replace(regexp, '');
+        document.getElementById('title').innerHTML = trimmedPageTitle;
+        document.getElementById('url').innerHTML = tab.url;
+        pageTitle = trimmedPageTitle;
+        pageURL = tab.url;
+
+        var regexpJiraPrefix = new RegExp(defaultJiraSettings["jiraPrefix"] + "\\-\\d+");
+        jiraNumber = tab.url.match(regexpJiraPrefix);
+        workspaceID = defaultAsanaSettings["workspaceID"];
+        accessToken = defaultAsanaSettings["accessToken"];
+        getExistingTasks();
       });
+
     });
 });
 
