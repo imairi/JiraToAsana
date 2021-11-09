@@ -73,8 +73,8 @@ function getExistingTasks() {
             if (result.data == "") {
               htmlForAsanaTasks = "No Asana tasks related to this Jira task.";
             } else {
-              result.data.forEach(d => {
-                  htmlForAsanaTasks += '<a href="https://app.asana.com/0/0/' + d["gid"] + '/f" target="_blank">' + d["name"] + '</a><br>';
+              result.data.forEach(data => {
+                  htmlForAsanaTasks += '<a href="https://app.asana.com/0/0/' + data["gid"] + '/f" target="_blank">' + data["name"] + '</a><br>';
               });
             }
 

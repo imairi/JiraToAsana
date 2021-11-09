@@ -74,7 +74,7 @@ function getProjects(callBack) {
               callBack();
           }
         } else {
-          document.getElementById('asana-projects').innerHTML = '情報取得に失敗しました';
+          document.getElementById('asana-projects').innerHTML = 'Failed to load Projects.';
         }
     }
 }
@@ -122,7 +122,7 @@ function getCustomFields(projectID) {
       } else {
           let htmlForCustomFields = "";
           htmlForCustomFields += '<div class="custom-field-project-name">' + currentProjects[projectID]  + '</div>';
-          document.getElementById('custom-fields').innerHTML = '情報取得に失敗しました';
+          document.getElementById('custom-fields').innerHTML = 'Failed to load Custom Fields.';
       }
     }
 }
@@ -169,7 +169,7 @@ function saveJiraSettings() {
 
 function saveProjects() {
   const projects = [];
-  const project = document.form1.project;
+  const project = document.asanaform.project;
 
   for (let i = 0; i < project.length; i++) {
     if (project[i].checked) { 
