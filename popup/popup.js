@@ -44,7 +44,7 @@ window.addEventListener('load',()=>{
 
 function getExistingTasks() {
     if (jiraNumber == null || jiraNumber == "") {
-      alert("🙏\nSorry, Jira number cannot be detected from URL. Open Jira task individual page.");
+      alert("🙏\nSorry, Jira number cannot be detected from URL. Open Jira issue individual page.");
       document.getElementById('create-task').remove();
       return
     }

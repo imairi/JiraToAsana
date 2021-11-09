@@ -32,7 +32,7 @@ window.addEventListener('load',()=>{
       }
 
       if (defaultJiraSettings == null) {
-        alert("🙏\nInput Jira Settings for detecting Jira tasks.");
+        alert("🙏\nInput Jira Settings for detecting Jira issues.");
         return
       } else {
         document.getElementById('jira-prefix').value = defaultJiraSettings["jiraPrefix"];
