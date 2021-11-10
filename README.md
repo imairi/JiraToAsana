@@ -13,6 +13,12 @@ The below options are automatically set to Asana task.
 
 Let's save time to copy & paste Jira issue to Asana as much as possible.
 
+# Install
+
+Get the extension from Chrome Web Store.
+https://chrome.google.com/webstore/detail/jiratoasana/ohjooigiblcjmpffdijgafloijdmbemb
+
+
 # Features
 
 ## Create Asana task
