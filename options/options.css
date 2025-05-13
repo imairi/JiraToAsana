@@ -13,32 +13,39 @@ body {
 }
 
 .scrollBox {
-  height: 200px;               
-  border: 1px solid #333;      
-  overflow-y: scroll;          
+  height: 200px;
+  border: 1px solid #333;
+  overflow-y: scroll;
   padding: 10px;
   margin: 10px;
   border-color: #DF726E;
 }
 
 .asana-box {
-  height: 180px;               
-  border: 1px solid #333;      
+  border: 1px solid #333;
   padding: 10px;
   margin: 10px;
   border-color: #DF726E;
 }
 
+.asana-box > div {
+  margin-bottom: 10px; 
+}
+
+.asana-box > div:last-child {
+  margin-bottom: 0; 
+}
+
 .jira-box {
-  height: 180px;               
-  border: 1px solid #333;      
+  height: 180px;
+  border: 1px solid #333;
   padding: 10px;
   margin: 10px;
   border-color: #1C55C5;
 }
 
 .hint-box {
-  height: 200px;               
+  height: 200px;
   padding: 10px;
   margin: 10px;
   background-color: #EEE;
@@ -70,17 +77,21 @@ body {
 
 .settingsLabel {
   font-size: 15px;
+  display: block;
+  margin-bottom: 3px;
 }
 
 .settingsInput {
   padding: 5px;
-  margin: 5px 0px 5px 0px;
+  margin: 0px 0px 5px 0px; 
+  box-sizing: border-box;
+  width: 100%; 
 }
 
 .asana-button {
   padding: 10px;
   margin: 0px 10px 0px 0px;
-  border: 1px solid #DF726E;      
+  border: 1px solid #DF726E;
   border-radius: 10px 10px 10px 10px;
   font-weight: bold;
   background: #DF726E;
@@ -100,7 +111,7 @@ body {
 .jira-button {
   padding: 10px;
   margin: 0px 10px 0px 0px;
-  border: 1px solid #1C55C5;      
+  border: 1px solid #1C55C5;
   border-radius: 10px 10px 10px 10px;
   font-weight: bold;
   background: #1C55C5;

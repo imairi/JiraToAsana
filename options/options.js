@@ -1,242 +1,233 @@
-var defaultAsanaSettings = {};
-var defaultJiraSettings = {};
-var defaultProjects = [];
-var defaultCustomFields = {};
-var currentProjects = {};
-var currentCustomFieldsHTML = "";
-var teamID = "";
-var accessToken = "";
+var asanaSettingsOnLoad = {};
+var jiraSettingsOnLoad = {};
+var projectGidForCustomFieldsOnLoad = ""; 
+var customFieldSelectionsOnLoad = {}; 
 
-window.addEventListener('load',()=>{ 
-    chrome.storage.local.get(["asanaSettings", "jiraSettings", "projects", "customFields"], function (value) {
-      defaultAsanaSettings = value.asanaSettings;
-      defaultJiraSettings = value.jiraSettings;
-      defaultProjects = value.projects;
-      defaultCustomFields = value.customFields;
+var currentCustomFieldsHTML = ""; 
+var currentTeamID = ""; 
+var currentAccessToken = "";
 
-      if (defaultAsanaSettings == null && defaultJiraSettings == null) {
-        alert("\n✨✨ Welcome!! ✨✨\n Input Asana and Jira Settings.");
-        return
-      }
+window.addEventListener('load', () => {
+    chrome.storage.local.get([
+        "asanaSettings",
+        "jiraSettings",
+        "projectGidForCustomFields",
+        "customFieldSelections"
+    ], function (data) {
+        asanaSettingsOnLoad = data.asanaSettings || {};
+        jiraSettingsOnLoad = data.jiraSettings || {};
+        projectGidForCustomFieldsOnLoad = data.projectGidForCustomFields || "";
+        customFieldSelectionsOnLoad = data.customFieldSelections || {};
 
-      if (defaultAsanaSettings == null) {
-        alert("🙏\nInput Asana Settings for connecting Asana.");
-        return
-      } else {
-        teamID = defaultAsanaSettings["teamID"];
-        accessToken = defaultAsanaSettings["accessToken"];
-
-        document.getElementById('access-token').value = defaultAsanaSettings["accessToken"];
-        document.getElementById('workspace-id').value = defaultAsanaSettings["workspaceID"];
-        document.getElementById('team-id').value = defaultAsanaSettings["teamID"];
-      }
-
-      if (defaultJiraSettings == null) {
-        alert("🙏\nInput Jira Settings for detecting Jira issues.");
-        return
-      } else {
-        document.getElementById('jira-prefix').value = defaultJiraSettings["jiraPrefix"];
-        document.getElementById('jira-regexp').value = defaultJiraSettings["jiraRegexp"];
-      }
-
-      getProjects(function() {
-        loadCustomFields();
-      });
-    });
-})
-
-function getProjects(callBack) {
-    if (teamID == null || teamID == "" || accessToken == null || accessToken == "") {
-      alert("Please set 'Personal Access Token' or 'Asana Team ID'.");
-      return
-    }
-
-    document.getElementById('asana-projects').innerHTML = '<img class="loader" src="../images/loading.gif">';
-
-    const projectsRequest = new XMLHttpRequest();
-    const projectsURL = "https://app.asana.com/api/1.0/teams/" + teamID + "/projects?archived=false&limit=100";
-    projectsRequest.open("GET", projectsURL, true);
-    projectsRequest.setRequestHeader("Content-Type", "application/json");
-    projectsRequest.setRequestHeader("Authorization", "Bearer " + accessToken);
-    projectsRequest.send("");
-    projectsRequest.onreadystatechange = function() {
-        document.getElementById('asana-projects').innerHTML = '';
-        if (this.status === 200) {
-          if (this.readyState === XMLHttpRequest.DONE) {
-              projectsResponse = JSON.parse(projectsRequest.responseText);
-              let htmlForAsanaProjects = "";
-              projectsResponse.data.forEach(data => {
-                  let checkedText = defaultProjects.includes(data["gid"]) ? "checked" : "";
-                  htmlForAsanaProjects += '<div><input type="checkbox" name="project" value="' + data["gid"]  + '" ' + checkedText + '><label>' + data["name"]  + '</label></div>';
-                  currentProjects[data["gid"]] = data["name"];
-              });
-              document.getElementById('asana-projects').innerHTML = htmlForAsanaProjects;
-              callBack();
-          }
-        } else {
-          document.getElementById('asana-projects').innerHTML = 'Failed to load Projects.';
+        // Asana SettingsのUI反映
+        if (asanaSettingsOnLoad.accessToken) {
+            document.getElementById('access-token').value = asanaSettingsOnLoad.accessToken;
+            currentAccessToken = asanaSettingsOnLoad.accessToken;
         }
-    }
+        if (asanaSettingsOnLoad.workspaceID) {
+            document.getElementById('workspace-id').value = asanaSettingsOnLoad.workspaceID;
+        }
+        if (asanaSettingsOnLoad.teamID) { 
+            document.getElementById('team-id').value = asanaSettingsOnLoad.teamID;
+            currentTeamID = asanaSettingsOnLoad.teamID;
+        }
+
+
+        // Jira SettingsのUI反映
+        if (jiraSettingsOnLoad.jiraPrefix) {
+            document.getElementById('jira-prefix').value = jiraSettingsOnLoad.jiraPrefix;
+        }
+        if (jiraSettingsOnLoad.jiraRegexp) {
+            document.getElementById('jira-regexp').value = jiraSettingsOnLoad.jiraRegexp;
+        }
+
+        // Project GID for Custom FieldsのUI反映
+        document.getElementById('project-gid-for-custom-fields').value = projectGidForCustomFieldsOnLoad;
+
+        // カスタムフィールド設定対象のプロジェクトがあれば読み込む
+        if (projectGidForCustomFieldsOnLoad && currentAccessToken) {
+            loadCustomFieldsForProject(projectGidForCustomFieldsOnLoad);
+        } else {
+            if (!currentAccessToken && projectGidForCustomFieldsOnLoad) {
+                 alert("Please set Asana 'Personal Access Token' to load custom fields.");
+            }
+        }
+    });
+});
+
+// Asana基本設定（トークン、ワークスペースID、チームID）を保存
+function saveAsanaSettings() {
+    const newAsanaSettings = {
+        accessToken: document.getElementById("access-token").value,
+        workspaceID: document.getElementById("workspace-id").value,
+        teamID: document.getElementById("team-id").value 
+    };
+
+    chrome.storage.local.set({ 'asanaSettings': newAsanaSettings }, function () {
+        alert("👍 Successfully saved Asana Settings.");
+        asanaSettingsOnLoad = newAsanaSettings;
+        currentAccessToken = newAsanaSettings.accessToken;
+        currentTeamID = newAsanaSettings.teamID;
+
+        document.getElementById('project-gid-for-custom-fields').value = '';
+        projectGidForCustomFieldsOnLoad = '';
+        clearCustomFieldsDisplay();
+        chrome.storage.local.set({
+            'projectGidForCustomFields': '',
+            'customFieldSelections': {}
+        }, () => {
+            customFieldSelectionsOnLoad = {};
+        });
+    });
 }
 
-function getCustomFields(projectID) {
-    document.getElementById('custom-fields-loading').insertAdjacentHTML('beforeend', '<img class="loader" data-projectID="' + projectID + '" src="../images/loading.gif">');
+// Jira設定を保存
+function saveJiraSettings() {
+    const newJiraSettings = {
+        jiraPrefix: document.getElementById("jira-prefix").value,
+        jiraRegexp: document.getElementById("jira-regexp").value || ""
+    };
+    chrome.storage.local.set({ 'jiraSettings': newJiraSettings }, function () {
+        alert("👍 Successfully saved Jira Settings.");
+        jiraSettingsOnLoad = newJiraSettings;
+    });
+}
+
+// 指定されたGIDのプロジェクトのカスタムフィールドを読み込むボタンの処理
+function handleLoadCustomFieldsForProjectButton() {
+    const projectGid = document.getElementById('project-gid-for-custom-fields').value.trim();
+    if (!projectGid) {
+        alert("Please enter a Project GID for Custom Fields.");
+        return;
+    }
+    if (!currentAccessToken) {
+        alert("Please set 'Personal Access Token' in Asana Settings first.");
+        return;
+    }
+    chrome.storage.local.set({ 'projectGidForCustomFields': projectGid }, () => {
+        projectGidForCustomFieldsOnLoad = projectGid; 
+        alert(`📝 Set Project GID for Custom Fields to: ${projectGid}. Now loading its custom fields.`);
+        loadCustomFieldsForProject(projectGid);
+    });
+}
+
+function fetchProjectName(projectGid, callback) {
+    if (!currentAccessToken) {
+        if (callback) callback(`Project GID: ${projectGid} (Token not set)`);
+        return;
+    }
+    const projectDetailsURL = `https://app.asana.com/api/1.0/projects/${projectGid}?opt_fields=name`;
+    const request = new XMLHttpRequest();
+    request.open("GET", projectDetailsURL, true);
+    request.setRequestHeader("Authorization", `Bearer ${currentAccessToken}`);
+    request.send();
+    request.onreadystatechange = function() {
+        if (this.readyState === XMLHttpRequest.DONE) {
+            if (this.status === 200) {
+                const response = JSON.parse(this.responseText);
+                if (callback) callback(response.data.name);
+            } else {
+                console.error(`Failed to fetch project name for GID ${projectGid}. Status: ${this.status}`);
+                if (callback) callback(`Project GID: ${projectGid} (Name not found)`);
+            }
+        }
+    };
+}
+
+
+// 指定された単一プロジェクトのカスタムフィールドを読み込んで表示
+function loadCustomFieldsForProject(projectGid) {
+    if (!projectGid) {
+        clearCustomFieldsDisplay();
+        document.getElementById('custom-fields-target-project-info').textContent = "No project GID specified for custom fields.";
+        return;
+    }
+    if (!currentAccessToken) {
+        alert("Asana Access Token is not set. Cannot load custom fields.");
+        return;
+    }
+
+    clearCustomFieldsDisplay();
+    document.getElementById('custom-fields-loading').innerHTML = '<img class="loader" src="../images/loading.gif">';
+    
+    fetchProjectName(projectGid, function(projectName) {
+        document.getElementById('custom-fields-target-project-info').textContent = `Custom Fields for: ${projectName}`;
+    });
 
     const customFieldsRequest = new XMLHttpRequest();
-    const customFieldsURL = "https://app.asana.com/api/1.0/projects/" + projectID  + "/custom_field_settings?opt_fields=custom_field&limit=100";
+    const customFieldsURL = `https://app.asana.com/api/1.0/projects/${projectGid}/custom_field_settings?opt_fields=custom_field.name,custom_field.gid,custom_field.type,custom_field.enum_options,custom_field.enum_options.name,custom_field.enum_options.gid&limit=100`;
     customFieldsRequest.open("GET", customFieldsURL, true);
-    customFieldsRequest.setRequestHeader("Content-Type", "application/json");
-    customFieldsRequest.setRequestHeader("Authorization", "Bearer " + accessToken);
-    customFieldsRequest.send("");
-    customFieldsRequest.onreadystatechange = function() {
-        const loaders = document.getElementsByClassName("loader");
-        for(let i = 0; i < loaders.length; i++) { 
-          if (loaders[i].dataset.projectid == projectID) {
-            loaders[i].remove();
-          }
-        }
-        if (this.status === 200) {
-          if (this.readyState === XMLHttpRequest.DONE) {
-            customFieldsResponse = JSON.parse(customFieldsRequest.responseText);
-            let htmlForCustomFields = "";
-            htmlForCustomFields += '<div class="custom-field-project-name">' + currentProjects[projectID]  + '</div>'
-            customFieldsResponse.data.forEach(data => {
-                if (data.custom_field.type == "enum") {
-                  htmlForCustomFields += '<div class="custom-field-name">' + data.custom_field["name"]  + '</div>';
-                  htmlForCustomFields += '<form class="custom-field-form">';
-                  const customFieldID = data.custom_field.gid;
-                  data.custom_field.enum_options.forEach(option => {
-                    const defaultOptionID = defaultCustomFields[customFieldID];
-                    let checkedText = "";
-                    if (defaultOptionID == option["gid"]) {
-                      checkedText = "checked";
-                    }  
-                    htmlForCustomFields += '<div><input type="radio" data-customField="' + customFieldID + '" value="' + option["gid"]  + '" ' + checkedText + '><label>' + option["name"]  + '</label></div>';
-                  });
-                  htmlForCustomFields += '</form>'
+    customFieldsRequest.setRequestHeader("Authorization", `Bearer ${currentAccessToken}`);
+    customFieldsRequest.send();
+
+    customFieldsRequest.onreadystatechange = function () {
+        if (this.readyState === XMLHttpRequest.DONE) {
+            document.getElementById('custom-fields-loading').innerHTML = '';
+            if (this.status === 200) {
+                const customFieldsResponse = JSON.parse(customFieldsRequest.responseText);
+                let htmlForCustomFields = "";
+                let foundEnumFields = false;
+                customFieldsResponse.data.forEach(fieldSetting => {
+                    const customField = fieldSetting.custom_field;
+                    if (customField.type === "enum" && customField.enum_options) {
+                        foundEnumFields = true;
+                        htmlForCustomFields += `<div class="custom-field-name">${customField.name}</div>`;
+                        htmlForCustomFields += `<form class="custom-field-form">`; 
+                        const customFieldGid = customField.gid;
+                        customField.enum_options.forEach(option => {
+                            const previouslySelectedOptionGid = customFieldSelectionsOnLoad[customFieldGid];
+                            let checkedText = (previouslySelectedOptionGid === option.gid) ? "checked" : "";
+                            htmlForCustomFields += `<div><input type="radio" name="custom_field_option_${customFieldGid}" data-customfieldgid="${customFieldGid}" value="${option.gid}" ${checkedText}><label>${option.name}</label></div>`;
+                        });
+                        htmlForCustomFields += '</form>';
+                    }
+                });
+                currentCustomFieldsHTML = htmlForCustomFields;
+                document.getElementById('custom-fields').innerHTML = currentCustomFieldsHTML;
+                if (!foundEnumFields) {
+                     document.getElementById('custom-fields').innerHTML = "No enum type custom fields found for this project.";
                 }
-            });
-            currentCustomFieldsHTML += htmlForCustomFields;
-            document.getElementById('custom-fields').innerHTML = currentCustomFieldsHTML;
+            } else {
+                document.getElementById('custom-fields').innerHTML = `Failed to load custom fields. Status: ${this.status}`;
+                console.error("Error fetching custom fields: ", this.status, this.responseText);
+                document.getElementById('custom-fields-target-project-info').textContent = `Error loading custom fields for GID: ${projectGid}`;
+            }
         }
-      } else {
-          let htmlForCustomFields = "";
-          htmlForCustomFields += '<div class="custom-field-project-name">' + currentProjects[projectID]  + '</div>';
-          document.getElementById('custom-fields').innerHTML = 'Failed to load Custom Fields.';
-      }
-    }
+    };
 }
 
-function saveAsanaSettings() {
-  const asanaSettings = {};
-  const _accessToken = document.getElementById("access-token").value;
-  const _workspaceID = document.getElementById("workspace-id").value;
-  const _teamID = document.getElementById("team-id").value;
-
-  asanaSettings["accessToken"] = _accessToken;
-  asanaSettings["workspaceID"] = _workspaceID;
-  asanaSettings["teamID"] = _teamID;
-
-  chrome.storage.local.set({'asanaSettings': asanaSettings}, function() {
-    alert("👍 Successfully saved Asana Settings.\nNow fetching projects.")
-    defaultAsanaSettings = asanaSettings;
-    accessToken = _accessToken;
-    teamID = _teamID;
-    clearProjects(function() { 
-      getProjects(function() { 
-        loadCustomFields();
-      });
+// 表示されているカスタムフィールドの選択値を保存
+function saveCustomFieldSelections() {
+    const newCustomFieldSelections = {};
+    const forms = document.getElementsByClassName("custom-field-form");
+    for (let i = 0; i < forms.length; i++) {
+        let inputs = forms[i].getElementsByTagName("input");
+        for (let j = 0; j < inputs.length; j++) {
+            if (inputs[j].checked && inputs[j].type === 'radio') {
+                const optionGid = inputs[j].value;
+                const customFieldGid = inputs[j].dataset.customfieldgid;
+                newCustomFieldSelections[customFieldGid] = optionGid;
+            }
+        }
+    }
+    chrome.storage.local.set({ 'customFieldSelections': newCustomFieldSelections }, function () {
+        alert("👍 Successfully saved Custom Fields selections.");
+        customFieldSelectionsOnLoad = newCustomFieldSelections;
     });
-    clearCustomFields(function(){});
-  });
 }
 
-function saveJiraSettings() {
-  const jiraSettings = {};
-  const _jiraPrefix = document.getElementById("jira-prefix").value;
-  const _jiraRegexp = document.getElementById("jira-regexp").value;
-
-  jiraSettings["jiraPrefix"] = _jiraPrefix;
-
-  if (_jiraRegexp != null) {
-    jiraSettings["jiraRegexp"] = _jiraRegexp;
-  }
-
-  chrome.storage.local.set({'jiraSettings': jiraSettings}, function() {
-    alert("👍 Successfully saved Jira Settings.")
-  });
-}
-
-function saveProjects() {
-  const projects = [];
-  const project = document.asanaform.project;
-
-  for (let i = 0; i < project.length; i++) {
-    if (project[i].checked) { 
-      projects.push(project[i].value);
-    }
-  }
-  chrome.storage.local.set({'projects': projects}, function() {
-    alert("👍 Successfully saved Projects.")
-    defaultProjects = projects;
-    clearCustomFields(function () { loadCustomFields();} );
-  });
-}
-
-function clearProjects(callBack) {
-  chrome.storage.local.set({'projects': []}, function() {
-    defaultProjects = [];
-    document.getElementById('asana-projects').innerHTML = "";
-    callBack();
-  });
-}
-
-function saveCustomFields() {
-  const customFields = {};
-  const forms = document.getElementsByClassName("custom-field-form");
-  for(let i = 0; i <forms.length; i++){ 
-    let inputs = forms[i].getElementsByTagName("input");
-    for(let j = 0; j <inputs.length; j++){ 
-      if (inputs[j].checked) {
-        const optionID = inputs[j].value;
-        const customFieldID = inputs[j].dataset.customfield;
-        customFields[customFieldID] = optionID;
-      }
-    }
-  }
-  chrome.storage.local.set({'customFields': customFields}, function() {
-    alert("👍 Successfully saved Custom Fields.")
-  });
-}
-
-function clearCustomFields(callBack) {
-  chrome.storage.local.set({'customFields': {}}, function() {
-    defaultCustomFields = {};
+// カスタムフィールドの表示エリアをクリアする
+function clearCustomFieldsDisplay() {
     currentCustomFieldsHTML = "";
     document.getElementById('custom-fields').innerHTML = "";
-    callBack();
-  });
+    document.getElementById('custom-fields-target-project-info').textContent = ""; 
+    document.getElementById('custom-fields-loading').innerHTML = "";
 }
 
-function loadCustomFields() {
-  defaultProjects.forEach(projectID => {
-    getCustomFields(projectID);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#saveAsanaSettingsButton').addEventListener('click', saveAsanaSettings);
+// イベントリスナーの設定
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('saveAsanaSettingsButton').addEventListener('click', saveAsanaSettings);
+    document.getElementById('saveJiraSettingsButton').addEventListener('click', saveJiraSettings);
+    document.getElementById('loadCustomFieldsForProjectButton').addEventListener('click', handleLoadCustomFieldsForProjectButton);
+    document.getElementById('saveCustomFieldsButton').addEventListener('click', saveCustomFieldSelections);
 });
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#saveJiraSettingsButton').addEventListener('click', saveJiraSettings);
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#saveProjectsButton').addEventListener('click', saveProjects);
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('#saveCustomFieldsButton').addEventListener('click', saveCustomFields);
-});
-

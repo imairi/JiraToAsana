@@ -10,44 +10,42 @@
           <div class="asana-title"> Asana Settings </div>
           <div class="asana-box">
             <div>
-              <label for="name" class="settingsLabel">Personal Access Token (*)</label><br>
-              <input type="text" id="access-token" name="access-token" size="40" class="settingsInput">
+              <label for="access-token" class="settingsLabel">Personal Access Token (*)</label>
+              <input type="text" id="access-token" name="access-token" class="settingsInput">
             </div>
             <div>
-              <label for="name" class="settingsLabel">Asana Workspace ID (*)</label><br>
-              <input type="text" id="workspace-id" name="workspace-id" size="40" class="settingsInput">
+              <label for="workspace-id" class="settingsLabel">Asana Workspace ID (*)</label>
+              <input type="text" id="workspace-id" name="workspace-id" class="settingsInput">
             </div>
             <div>
-              <label for="name" class="settingsLabel">Asana Team ID (*)</label><br>
-              <input type="text" id="team-id" name="team-id" size="40" class="settingsInput">
+              <label for="team-id" class="settingsLabel">Asana Team ID (*)</label>
+              <input type="text" id="team-id" name="team-id" class="settingsInput">
             </div>
           </div>
           <div class="saveButtonArea">
-            <button type="button" id="saveAsanaSettingsButton" class="asana-save-button asana-button">Save</button>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="asana-title"> Projects </div>
-          <div class="scrollBox">
-            <form name="asanaform" id="asana-projects">
-            </form>
-          </div>
-          <div class="saveButtonArea">
-            <button type="button" id="saveProjectsButton" class="asana-save-button asana-button">Save</button>
+            <button type="button" id="saveAsanaSettingsButton" class="asana-save-button asana-button">Save Asana Settings</button>
           </div>
         </div>
 
         <div class="section">
           <div class="asana-title"> Custom Fields (Enum) </div>
-          <div class="scrollBox">
+          <div class="asana-box" style="margin-bottom: 10px;"> <div>
+              <label for="project-gid-for-custom-fields" class="settingsLabel">Project GID for Custom Fields Setup</label>
+              <input type="text" id="project-gid-for-custom-fields" name="project-gid-for-custom-fields" class="settingsInput">
+            </div>
+            <div class="saveButtonArea" style="margin-top: 10px;">
+              <button type="button" id="loadCustomFieldsForProjectButton" class="asana-button">Load Custom Fields for this GID</button>
+            </div>
+          </div>
+          <div id="custom-fields-target-project-info" style="margin-left:10px; font-weight:bold; margin-bottom: 5px;"></div>
+          <div class="scrollBox" id="custom-fields-container">
             <div id="custom-fields-loading">
             </div>
             <div id="custom-fields">
             </div>
           </div>
           <div class="saveButtonArea">
-            <button type="button" id="saveCustomFieldsButton" class="asana-save-button asana-button">Save</button>
+            <button type="button" id="saveCustomFieldsButton" class="asana-save-button asana-button">Save Custom Fields Selections</button>
           </div>
         </div>
       </div>
@@ -57,16 +55,16 @@
           <div class="jira-title"> Jira Settings </div>
           <div class="jira-box">
             <div>
-              <label for="name" class="settingsLabel">Jira Issue Prefix (*)</label><br>
-              <input type="text" id="jira-prefix" name="jira-prefix" size="40" class="settingsInput">
+              <label for="jira-prefix" class="settingsLabel">Jira Issue Prefix (*)</label>
+              <input type="text" id="jira-prefix" name="jira-prefix" class="settingsInput">
             </div>
             <div>
-              <label for="name" class="settingsLabel">Regexp for cutting text from Jira title</label><br>
-              <input type="text" id="jira-regexp" name="jira-regexp" size="40" class="settingsInput">
+              <label for="jira-regexp" class="settingsLabel">Regexp for cutting text from Jira title</label>
+              <input type="text" id="jira-regexp" name="jira-regexp" class="settingsInput">
             </div>
           </div>
           <div class="saveButtonArea">
-            <button type="button" id="saveJiraSettingsButton" class="jira-save-button jira-button">Save</button>
+            <button type="button" id="saveJiraSettingsButton" class="jira-save-button jira-button">Save Jira Settings</button>
           </div>
         </div>
 
@@ -74,9 +72,9 @@
           <div class="hint-title"> Hints </div>
           <div class="hint-box">
             <ol>
-              <li>Save higher settings, the following settings and its local stored data are reset, e.g. Save Asana Settings, current Projects and Custom Fields are reset. If wants to reset Custom Fields settings, save Projects again.</li>
-              <li>It is available to select only Enum type for Custom Fields.</li>
-              <li>It occurred some problems cannot be resolved by yourself, delete extension and install again.</li>
+              <li>Saving Asana Settings might reset other configurations.</li>
+              <li>Only 'Enum' type custom fields are supported for selection.</li>
+              <li>If unresolvable problems occur, try reinstalling the extension.</li>
             </ol>
           </div>
         </div>
